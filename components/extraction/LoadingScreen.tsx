@@ -54,13 +54,12 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
                 <div className="w-5 h-5 rounded-full border-2 border-gray-300 shrink-0" />
               )}
               <span
-                className={`text-xs font-semibold ${
-                  isDone
+                className={`text-xs font-semibold ${isDone
                     ? "text-[#2B2B2B]"
                     : isCurrent
-                    ? "text-[#FF5722] font-bold"
-                    : "text-[#6B6B6B]"
-                }`}
+                      ? "text-[#FF5722] font-bold"
+                      : "text-[#6B6B6B]"
+                  }`}
               >
                 {item.label}
               </span>
@@ -68,10 +67,6 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
           );
         })}
       </div>
-
-      <p className="text-xs text-[#6B6B6B] mt-6 italic">
-        Powered by Gemini 2.0 Flash Vision Multimodal Model
-      </p>
     </div>
   );
 };
