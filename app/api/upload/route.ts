@@ -5,7 +5,6 @@ import { generateFigmaAnswerSheetSVG } from "@/lib/ai/fallback-data";
 import { pdfBufferToPageImages } from "@/lib/ai/pdf";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
@@ -110,7 +109,7 @@ export async function POST(req: Request) {
     };
 
     saveSession(session);
-    return NextResponse.json({ success: true, sessionId, session });
+    return NextResponse.json({ success: true, sessionId });
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json(
