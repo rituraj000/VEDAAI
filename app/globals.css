@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-orange: #FF5722;
+  --color-brand-orange-dark-border: #E2704E;
+  --color-charcoal: #2B2B2B;
+  --color-charcoal-soft: #303030;
+  --color-peach-highlight: #F4E3D9;
+  --color-sidebar-active-bg: #F0F0F0;
+  --color-canvas-bg: #E2E2E2;
+  --color-card-white: #FFFFFF;
+  --color-border-gray: #E5E5E5;
+  --color-selected-card-border: #FDBB93;
+  --color-selected-badge-orange: #FF7C55;
+  --color-default-badge-gray: #BCBCBC;
+  --color-feedback-box-bg: #F6F6F6;
+  --color-score-correct-bg: #91D381;
+  --color-score-correct-text: #2E7D32;
+  --color-score-incorrect-bg: #F4CBBF;
+  --color-score-incorrect-text: #D9534F;
+  --color-muted-text: #6B6B6B;
+
+  --font-sans: var(--font-inter), 'Inter', -apple-system, sans-serif;
+}
+
+:root {
+  --background: #E2E2E2;
+  --foreground: #2B2B2B;
+
+  --brand-orange: #FF5722;
+  --brand-orange-dark-border: #E2704E;
+  --charcoal: #2B2B2B;
+  --charcoal-soft: #303030;
+  --peach-highlight: #F4E3D9;
+  --sidebar-active-bg: #F0F0F0;
+  --canvas-bg: #E2E2E2;
+  --card-white: #FFFFFF;
+  --border-gray: #E5E5E5;
+  --selected-card-border: #FDBB93;
+  --selected-badge-orange: #FF7C55;
+  --default-badge-gray: #BCBCBC;
+  --feedback-box-bg: #F6F6F6;
+  --score-correct-bg: #91D381;
+  --score-correct-text: #2E7D32;
+  --score-incorrect-bg: #F4CBBF;
+  --score-incorrect-text: #D9534F;
+  --muted-text: #6B6B6B;
+}
+
+body {
+  background-color: var(--canvas-bg);
+  color: var(--charcoal);
+  font-family: var(--font-sans), 'Inter', -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+/* Sparkle shimmer animation */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.05); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s infinite ease-in-out;
+}
