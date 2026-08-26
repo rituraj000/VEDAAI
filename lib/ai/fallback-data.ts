@@ -12,43 +12,38 @@ export function generateFigmaAnswerSheetSVG(pageNum: number): string {
     svgContent = `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
         ${bg}
-        <text x="90" y="55" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="16" fill="#4B5563">Name: Rahul Kumar         Roll No: 10482</text>
-        <text x="90" y="80" font-family="'Comic Sans MS', cursive, sans-serif" font-size="13" fill="#6B7280">Testing note: Answers are intentionally arranged out of order.</text>
+        <text x="90" y="55" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="16" fill="#000000">Name: Rahul Kumar         Roll No: 10482</text>
+        <text x="90" y="80" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="13" fill="#000000">Testing note: Answers are intentionally arranged out of order.</text>
 
-        {/* Q3 Section - y: ~110px */}
         <g transform="translate(90, 130)">
-          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="16" fill="#1F2937">Q3</text>
-          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">The instruction cycle is the sequence of operations performed by the CPU to execute an instruction.</text>
-          <text x="0" y="46" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">The main stages are <tspan font-weight="bold">Fetch</tspan>, <tspan font-weight="bold">Decode</tspan>, <tspan font-weight="bold">Execute</tspan>, <tspan font-weight="bold">Memory access</tspan> and <tspan font-weight="bold">Write-back</tspan>.</text>
+          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="17" fill="#000000">Q3</text>
+          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">The instruction cycle is the sequence of operations performed by the CPU to execute an instruction.</text>
+          <text x="0" y="46" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">The main stages are Fetch, Decode, Execute, Memory access and Write-back.</text>
         </g>
 
-        {/* Q6 Section - y: ~308px */}
         <g transform="translate(90, 325)">
-          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="16" fill="#1F2937">Q6</text>
-          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">Instructions = 100, CPI = 2, clock rate = 1 GHz.</text>
-          <text x="0" y="46" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">CPU cycles = 100 * 2 = 200 cycles.</text>
-          <text x="0" y="68" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">Execution time = 200 / (1 * 10^9) = <tspan font-weight="bold" fill="#059669">200 ns</tspan>.</text>
+          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="17" fill="#000000">Q6</text>
+          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">Instructions = 100, CPI = 2, clock rate = 1 GHz.</text>
+          <text x="0" y="46" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">CPU cycles = 100 * 2 = 200 cycles.</text>
+          <text x="0" y="68" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">Execution time = 200 / (1 * 10^9) = 200 ns.</text>
         </g>
 
-        {/* Q1 Section - y: ~506px */}
         <g transform="translate(90, 520)">
-          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="16" fill="#1F2937">Q1</text>
-          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">RISC uses a smaller and simpler instruction set. CISC uses a larger and more complex instruction</text>
-          <text x="0" y="46" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">set. RISC emphasizes simple instructions and efficient pipelining, while CISC provides more powerful</text>
-          <text x="0" y="68" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">instructions.</text>
+          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="17" fill="#000000">Q1</text>
+          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">RISC uses a smaller and simpler instruction set. CISC uses a larger and more complex instruction</text>
+          <text x="0" y="46" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">set. RISC emphasizes simple instructions and efficient pipelining, while CISC provides more powerful</text>
+          <text x="0" y="68" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">instructions.</text>
         </g>
 
-        {/* Q8 (b) Section - y: ~704px */}
         <g transform="translate(90, 720)">
-          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="16" fill="#1F2937">Q8 (b)</text>
-          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">The Control Unit controls and coordinates CPU operations. It fetches and decodes instructions and</text>
-          <text x="0" y="46" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">generates control signals for registers, ALU, memory and other components.</text>
+          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="17" fill="#000000">Q8 (b)</text>
+          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">The Control Unit controls and coordinates CPU operations. It fetches and decodes instructions and</text>
+          <text x="0" y="46" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">generates control signals for registers, ALU, memory and other components.</text>
         </g>
 
-        {/* Q5 Section - y: ~902px */}
         <g transform="translate(90, 915)">
-          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="16" fill="#1F2937">Q5</text>
-          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">Clock frequency = 2 GHz. Clock cycle time = 1 / (2 * 10^9) seconds = <tspan font-weight="bold" fill="#059669">0.5 ns</tspan>.</text>
+          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="17" fill="#000000">Q5</text>
+          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">Clock frequency = 2 GHz. Clock cycle time = 1 / (2 * 10^9) seconds = 0.5 ns.</text>
         </g>
       </svg>
     `;
@@ -57,11 +52,11 @@ export function generateFigmaAnswerSheetSVG(pageNum: number): string {
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
         ${bg}
         <g transform="translate(90, 60)">
-          <text x="0" y="30" font-family="'Comic Sans MS', sans-serif" font-weight="bold" font-size="16" fill="#2B2B2B">Page 2 — Student Answers (Continued)</text>
-          <text x="0" y="70" font-family="'Comic Sans MS', sans-serif" font-size="14" fill="#303030">Q5) Alveoli diagram: Thin one-cell thick walls surrounded by blood capillaries.</text>
-          <text x="0" y="120" font-family="'Comic Sans MS', sans-serif" font-size="14" fill="#303030">Q6) Digestive system: Most absorption occurs in the small intestine (ileum).</text>
-          <text x="0" y="170" font-family="'Comic Sans MS', sans-serif" font-size="14" fill="#303030">11 a.) Plant A has green leaves due to chlorophyll. Plant B lacks light so etiolated.</text>
-          <text x="0" y="220" font-family="'Comic Sans MS', sans-serif" font-size="14" fill="#303030">11 b.) Move Plant B into indirect sunlight and water moderately.</text>
+          <text x="0" y="30" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="16" fill="#000000">Page 2 — Student Answers (Continued)</text>
+          <text x="0" y="70" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">Q5) Alveoli diagram: Thin one-cell thick walls surrounded by blood capillaries.</text>
+          <text x="0" y="120" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">Q6) Digestive system: Most absorption occurs in the small intestine (ileum).</text>
+          <text x="0" y="170" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">11 a.) Plant A has green leaves due to chlorophyll. Plant B lacks light so etiolated.</text>
+          <text x="0" y="220" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="14" fill="#000000">11 b.) Move Plant B into indirect sunlight and water moderately.</text>
         </g>
       </svg>
     `;
