@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { getSession, saveSession, updateSession } from "@/lib/store";
 import { GeminiProvider } from "@/lib/ai/gemini";
+import { getSampleDataset } from "@/lib/ai/fallback-data";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60; // 60s timeout allowance for Vercel serverless AI functions
 
 export async function POST(req: Request) {
   try {
@@ -21,44 +23,60 @@ export async function POST(req: Request) {
       saveSession(inputSession);
     }
 
-    const provider = new GeminiProvider(apiKey);
+    // Check if running Sample Demo dataset
+    const isSample =
+      session.questionPaperName?.includes("Class_10_Physics") ||
+      session.answerSheetName?.includes("Rahul");
 
-    // Update status to extracting questions
-    updateSession(session.sessionId, {
-      status: "extracting",
-      progressStep: 2,
-      progressMessage: "Extracting questions via AI Vision...",
-    });
+    let questions, answerSegments, mappings, unmatchedSegments, grades;
 
-    // Stage A: Extract Questions (Throws error if API fails)
-    const questions = await provider.extractQuestions(session.questionPaperPages);
+    if (isSample && (!apiKey || apiKey.trim() === "")) {
+      // Use pre-computed sample demo payload if no custom API key is supplied
+      const sampleData = getSampleDataset();
+      questions = sampleData.questions;
+      answerSegments = sampleData.answerSegments;
+      mappings = sampleData.mappings;
+      unmatchedSegments = sampleData.unmatchedSegments;
+      grades = sampleData.grades;
+    } else {
+      const provider = new GeminiProvider(apiKey);
 
-    updateSession(session.sessionId, {
-      progressStep: 3,
-      progressMessage: "Transcribing handwritten answers & bounding boxes...",
-    });
+      // Update status to extracting questions
+      updateSession(session.sessionId, {
+        status: "extracting",
+        progressStep: 2,
+        progressMessage: "Extracting questions via AI Vision...",
+      });
 
-    // Stage B: Extract Answers (Throws error if API fails)
-    const answerSegments = await provider.extractAnswers(session.answerSheetPages);
+      // Stage A: Extract Questions (Throws error if API fails)
+      questions = await provider.extractQuestions(session.questionPaperPages);
 
-    updateSession(session.sessionId, {
-      progressStep: 4,
-      progressMessage: "Mapping student answers to extracted questions...",
-    });
+      updateSession(session.sessionId, {
+        progressStep: 3,
+        progressMessage: "Transcribing handwritten answers & bounding boxes...",
+      });
 
-    // Stage C: Map Answers
-    const { mappings, unmatchedSegments } = await provider.mapAnswersToQuestions(
-      questions,
-      answerSegments
-    );
+      // Stage B: Extract Answers (Throws error if API fails)
+      answerSegments = await provider.extractAnswers(session.answerSheetPages);
 
-    updateSession(session.sessionId, {
-      progressStep: 5,
-      progressMessage: "Generating AI scores & evaluation feedback...",
-    });
+      updateSession(session.sessionId, {
+        progressStep: 4,
+        progressMessage: "Mapping student answers to extracted questions...",
+      });
 
-    // Stage D: Grade Answers
-    const grades = await provider.gradeAnswers(questions, mappings);
+      // Stage C: Map Answers
+      const mapped = await provider.mapAnswersToQuestions(questions, answerSegments);
+      mappings = mapped.mappings;
+      unmatchedSegments = mapped.unmatchedSegments;
+
+      updateSession(session.sessionId, {
+        progressStep: 5,
+        progressMessage: "Generating AI scores & evaluation feedback...",
+      });
+
+      // Stage D: Grade Answers
+      grades = await provider.gradeAnswers(questions, mappings);
+    }
 
     // Update session state with AI API results
     const updated = updateSession(session.sessionId, {

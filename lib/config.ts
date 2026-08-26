@@ -1,12 +1,25 @@
 export const config = {
-  urlLocal: process.env.URL_LOCAL || process.env.NEXT_PUBLIC_URL_LOCAL || "http://localhost:3000",
-  urlProd: process.env.URL_PROD || process.env.NEXT_PUBLIC_URL_PROD || "https://vedaai-rose.vercel.app",
-  apiKey: process.env.API_KEY || process.env.GEMINI_API_KEY || process.env.OPENROUTER_API_KEY || "",
+  urlLocal:
+    process.env.URL_LOCAL ||
+    process.env.url_local ||
+    process.env.NEXT_PUBLIC_URL_LOCAL ||
+    "http://localhost:3000",
+  urlProd:
+    process.env.URL_PROD ||
+    process.env.url_prod ||
+    process.env.NEXT_PUBLIC_URL_PROD ||
+    "https://vedaai-rose.vercel.app",
+  apiKey:
+    process.env.API_KEY ||
+    process.env.api_key ||
+    process.env.GEMINI_API_KEY ||
+    process.env.OPENROUTER_API_KEY ||
+    "",
 };
 
 /**
  * Returns the environment base URL for server-side API requests or headers.
- * Uses URL_PROD in production and URL_LOCAL in local development.
+ * Uses URL_PROD (or url_prod) in production and URL_LOCAL in local development.
  */
 export function getAppUrl(): string {
   const isProd =
@@ -17,6 +30,7 @@ export function getAppUrl(): string {
   if (isProd) {
     return (
       process.env.URL_PROD ||
+      process.env.url_prod ||
       process.env.NEXT_PUBLIC_URL_PROD ||
       "https://vedaai-rose.vercel.app"
     );
@@ -24,6 +38,7 @@ export function getAppUrl(): string {
 
   return (
     process.env.URL_LOCAL ||
+    process.env.url_local ||
     process.env.NEXT_PUBLIC_URL_LOCAL ||
     "http://localhost:3000"
   );
