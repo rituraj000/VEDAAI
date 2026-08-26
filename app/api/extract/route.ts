@@ -1,25 +1,30 @@
 import { NextResponse } from "next/server";
-import { getSession, updateSession } from "@/lib/store";
+import { getSession, saveSession, updateSession } from "@/lib/store";
 import { GeminiProvider } from "@/lib/ai/gemini";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
-    const { sessionId, apiKey } = await req.json();
-    if (!sessionId) {
-      return NextResponse.json({ error: "sessionId is required" }, { status: 400 });
+    const body = await req.json();
+    const { sessionId, apiKey, session: inputSession } = body;
+    if (!sessionId && !inputSession) {
+      return NextResponse.json({ error: "sessionId or session is required" }, { status: 400 });
     }
 
-    const session = getSession(sessionId);
+    let session = inputSession || (sessionId ? getSession(sessionId) : undefined);
     if (!session) {
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
+    }
+
+    if (inputSession) {
+      saveSession(inputSession);
     }
 
     const provider = new GeminiProvider(apiKey);
 
     // Update status to extracting questions
-    updateSession(sessionId, {
+    updateSession(session.sessionId, {
       status: "extracting",
       progressStep: 2,
       progressMessage: "Extracting questions via AI Vision...",
@@ -28,7 +33,7 @@ export async function POST(req: Request) {
     // Stage A: Extract Questions (Throws error if API fails)
     const questions = await provider.extractQuestions(session.questionPaperPages);
 
-    updateSession(sessionId, {
+    updateSession(session.sessionId, {
       progressStep: 3,
       progressMessage: "Transcribing handwritten answers & bounding boxes...",
     });
@@ -36,7 +41,7 @@ export async function POST(req: Request) {
     // Stage B: Extract Answers (Throws error if API fails)
     const answerSegments = await provider.extractAnswers(session.answerSheetPages);
 
-    updateSession(sessionId, {
+    updateSession(session.sessionId, {
       progressStep: 4,
       progressMessage: "Mapping student answers to extracted questions...",
     });
@@ -47,7 +52,7 @@ export async function POST(req: Request) {
       answerSegments
     );
 
-    updateSession(sessionId, {
+    updateSession(session.sessionId, {
       progressStep: 5,
       progressMessage: "Generating AI scores & evaluation feedback...",
     });
@@ -56,7 +61,7 @@ export async function POST(req: Request) {
     const grades = await provider.gradeAnswers(questions, mappings);
 
     // Update session state with AI API results
-    const finalSession = updateSession(sessionId, {
+    const updated = updateSession(session.sessionId, {
       questions,
       answerSegments,
       mappings,
@@ -67,9 +72,21 @@ export async function POST(req: Request) {
       progressMessage: "AI Extraction & Mapping completed successfully!",
     });
 
+    const finalSession = updated || {
+      ...session,
+      questions,
+      answerSegments,
+      mappings,
+      unmatchedSegments,
+      grades,
+      status: "graded",
+      progressStep: 6,
+      progressMessage: "AI Extraction & Mapping completed successfully!",
+    };
+
     return NextResponse.json({
       success: true,
-      sessionId,
+      sessionId: session.sessionId,
       data: finalSession,
     });
   } catch (error: any) {

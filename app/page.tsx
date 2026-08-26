@@ -64,6 +64,7 @@ export default function Home() {
 
       const uploadData = await uploadRes.json();
       const newSessionId = uploadData.sessionId;
+      const uploadedSession = uploadData.session;
       setSessionId(newSessionId);
 
       // Trigger AI Extraction Pipeline
@@ -74,15 +75,17 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sessionId: newSessionId,
+          session: uploadedSession,
           apiKey,
         }),
       });
 
+      const extractData = await extractRes.json();
+
       if (!extractRes.ok) {
-        throw new Error("Failed during AI extraction & mapping phase.");
+        throw new Error(extractData.error || "Failed during AI extraction & mapping phase.");
       }
 
-      const extractData = await extractRes.json();
       if (extractData.data) {
         setSessionData(extractData.data);
         setViewState("mapping");

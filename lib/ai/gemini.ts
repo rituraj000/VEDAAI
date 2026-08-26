@@ -1,6 +1,7 @@
 import sharp from "sharp";
 import { AIProvider } from "./provider";
 import { Question, AnswerSegment, Mapping, Grade } from "../types";
+import { getAppUrl, config } from "../config";
 
 async function ensureValidVisionImage(img: string): Promise<string> {
   if (!img || typeof img !== "string") return "";
@@ -71,8 +72,10 @@ export class GeminiProvider implements AIProvider {
   private apiKey: string;
 
   constructor(apiKey?: string) {
+    const trimmed = apiKey ? apiKey.trim() : "";
     this.apiKey =
-      apiKey ||
+      trimmed ||
+      config.apiKey ||
       process.env.API_KEY ||
       process.env.GEMINI_API_KEY ||
       process.env.OPENROUTER_API_KEY ||
@@ -81,7 +84,7 @@ export class GeminiProvider implements AIProvider {
 
   private getApiKey(): string {
     if (!this.apiKey || this.apiKey.trim().length === 0) {
-      throw new Error("API key not found in .env. Please configure API_KEY in .env");
+      throw new Error("API key not found in environment. Please configure API_KEY in .env or settings.");
     }
     return this.apiKey.trim();
   }
@@ -109,7 +112,7 @@ export class GeminiProvider implements AIProvider {
         headers: {
           Authorization: `Bearer ${key}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": "https://vedaai.app",
+          "HTTP-Referer": getAppUrl(),
           "X-Title": "VedaAI Assessment Extraction",
         },
         body: JSON.stringify({

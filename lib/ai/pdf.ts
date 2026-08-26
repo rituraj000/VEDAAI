@@ -2,9 +2,13 @@ import sharp from "sharp";
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 import "pdfjs-dist/legacy/build/pdf.worker.mjs";
 
-// Configure worker for Node.js server execution environment
+// Configure worker for Node.js server execution environment safely
 if (pdfjs.GlobalWorkerOptions) {
-  pdfjs.GlobalWorkerOptions.workerSrc = "pdfjs-dist/legacy/build/pdf.worker.mjs";
+  try {
+    delete (pdfjs.GlobalWorkerOptions as any).workerSrc;
+  } catch {
+    // Ignore workerSrc cleanup if read-only
+  }
 }
 
 /**

@@ -109,7 +109,7 @@ export async function POST(req: Request) {
     };
 
     saveSession(session);
-    return NextResponse.json({ success: true, sessionId });
+    return NextResponse.json({ success: true, sessionId, session });
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json(
