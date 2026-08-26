@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { saveSession } from "@/lib/store";
 import { SessionData } from "@/lib/types";
 import { generateFigmaAnswerSheetSVG } from "@/lib/ai/fallback-data";
-import { pdfBufferToPageImages } from "@/lib/ai/pdf";
 
 export const dynamic = "force-dynamic";
 
@@ -64,6 +63,9 @@ export async function POST(req: Request) {
 
       const qpMime = qpFileInput.type || "image/png";
       const ansMime = ansFileInput.type || "image/png";
+
+      // Dynamically load pdf processor inside request scope for serverless resilience
+      const { pdfBufferToPageImages } = await import("@/lib/ai/pdf");
 
       if (qpMime.includes("pdf") || qpName.toLowerCase().endsWith(".pdf")) {
         qpPages = await pdfBufferToPageImages(qpBuffer);

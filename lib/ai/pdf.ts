@@ -1,9 +1,8 @@
-import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 import { generateFigmaAnswerSheetSVG } from "./fallback-data";
 
 /**
  * Converts a PDF buffer into verified image data URLs for Vision AI extraction.
- * Resilience-focused: Runs safely across Node.js, Vercel Serverless, and local environments.
+ * Dynamically imports dependencies to guarantee zero serverless module initialization errors on Vercel.
  */
 export async function pdfBufferToPageImages(pdfBuffer: Buffer): Promise<string[]> {
   if (!pdfBuffer || pdfBuffer.length < 10) {
@@ -11,6 +10,9 @@ export async function pdfBufferToPageImages(pdfBuffer: Buffer): Promise<string[]
   }
 
   try {
+    // Dynamic import to prevent top-level module load failures in serverless environments
+    const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+
     const doc = await pdfjs.getDocument({
       data: new Uint8Array(pdfBuffer),
       useSystemFonts: true,
