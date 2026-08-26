@@ -164,11 +164,12 @@ Rules:
 2. Extract question text, pageIndex (0-indexed), and estimate max score if visible (default to 2).
 Return strictly a valid JSON array of objects with keys: "id", "number", "text", "pageIndex", "maxScore". Do not include markdown code block syntax.`;
 
+    const rawResponse = await this.callVisionAPI(prompt, pageImages);
+
     try {
-      const rawResponse = await this.callVisionAPI(prompt, pageImages);
       const jsonMatch = rawResponse.match(/\[[\s\S]*\]/);
       if (!jsonMatch) {
-        throw new Error("API response did not contain a valid JSON array of questions.");
+        throw new Error("Model response did not contain a valid JSON array of questions.");
       }
 
       const parsed = JSON.parse(jsonMatch[0]);
@@ -184,9 +185,7 @@ Return strictly a valid JSON array of objects with keys: "id", "number", "text",
         maxScore: typeof q.maxScore === "number" ? q.maxScore : 2,
       }));
     } catch (err: any) {
-      console.warn("[GeminiProvider] Question extraction API call failed, using local fallback dataset:", err.message);
-      const sample = getSampleDataset();
-      return sample.questions;
+      throw new Error(`Question extraction failed: ${err.message}`);
     }
   }
 
@@ -200,11 +199,12 @@ For each distinct answer segment, return:
 
 Return strictly a valid JSON array of objects with keys: "id", "detectedLabel", "transcribedText", "boundingBox", "pageIndex". Do not include markdown code block syntax.`;
 
+    const rawResponse = await this.callVisionAPI(prompt, pageImages);
+
     try {
-      const rawResponse = await this.callVisionAPI(prompt, pageImages);
       const jsonMatch = rawResponse.match(/\[[\s\S]*\]/);
       if (!jsonMatch) {
-        throw new Error("API response did not contain a valid JSON array of answer segments.");
+        throw new Error("Model response did not contain a valid JSON array of answer segments.");
       }
 
       const parsed = JSON.parse(jsonMatch[0]);
@@ -225,9 +225,7 @@ Return strictly a valid JSON array of objects with keys: "id", "detectedLabel", 
         detectedLabel: ans.detectedLabel ? String(ans.detectedLabel) : undefined,
       }));
     } catch (err: any) {
-      console.warn("[GeminiProvider] Answer extraction API call failed, using local fallback dataset:", err.message);
-      const sample = getSampleDataset();
-      return sample.answerSegments;
+      throw new Error(`Answer extraction failed: ${err.message}`);
     }
   }
 

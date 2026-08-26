@@ -116,21 +116,19 @@ export const MappingWorkspace: React.FC<MappingWorkspaceProps> = ({
         <div className="flex md:hidden bg-[#2B2B2B] p-1 rounded-xl shrink-0">
           <button
             onClick={() => setMobileTab("questions")}
-            className={`px-3 py-1 text-xs font-extrabold rounded-lg transition cursor-pointer ${
-              mobileTab === "questions"
+            className={`px-3 py-1 text-xs font-extrabold rounded-lg transition cursor-pointer ${mobileTab === "questions"
                 ? "bg-white text-[#2B2B2B] shadow-2xs"
                 : "text-gray-300 hover:text-white"
-            }`}
+              }`}
           >
             Questions ({questions.length})
           </button>
           <button
             onClick={() => setMobileTab("answers")}
-            className={`px-3 py-1 text-xs font-extrabold rounded-lg transition cursor-pointer ${
-              mobileTab === "answers"
+            className={`px-3 py-1 text-xs font-extrabold rounded-lg transition cursor-pointer ${mobileTab === "answers"
                 ? "bg-[#FF5722] text-white shadow-2xs"
                 : "text-gray-300 hover:text-white"
-            }`}
+              }`}
           >
             Answer Sheet
           </button>
@@ -141,9 +139,8 @@ export const MappingWorkspace: React.FC<MappingWorkspaceProps> = ({
       <div className="flex-1 flex overflow-hidden p-2 sm:p-4 gap-3 sm:gap-4">
         {/* LEFT PANEL: Extracted Questions List */}
         <div
-          className={`w-full md:w-[420px] lg:w-[480px] bg-white rounded-2xl border border-[#E5E5E5] flex flex-col shadow-sm shrink-0 overflow-hidden ${
-            mobileTab === "answers" ? "hidden md:flex" : "flex"
-          }`}
+          className={`w-full md:w-[420px] lg:w-[480px] bg-white rounded-2xl border border-[#E5E5E5] flex flex-col shadow-sm shrink-0 overflow-hidden ${mobileTab === "answers" ? "hidden md:flex" : "flex"
+            }`}
         >
           {/* Header matching Figma */}
           <div className="p-3.5 sm:p-4 border-b border-[#E5E5E5] bg-[#FAFAFA] flex items-center justify-between">
@@ -171,22 +168,20 @@ export const MappingWorkspace: React.FC<MappingWorkspaceProps> = ({
                 <div
                   key={q.id}
                   onClick={() => handleSelectQuestion(q.id)}
-                  className={`rounded-2xl transition-all duration-200 cursor-pointer border p-3.5 sm:p-4 bg-white shadow-2xs ${
-                    isSelected
+                  className={`rounded-2xl transition-all duration-200 cursor-pointer border p-3.5 sm:p-4 bg-white shadow-2xs ${isSelected
                       ? "border-2 border-[#FDBB93] bg-orange-50/15 ring-2 ring-[#FF5722]/10"
                       : "border-[#E5E5E5] hover:border-gray-300"
-                  }`}
+                    }`}
                 >
                   {/* Card Top Row */}
                   <div className="flex items-start justify-between gap-2.5">
                     <div className="flex items-start space-x-2.5">
                       {/* Figma Number Circle Badge */}
                       <div
-                        className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-extrabold text-[11px] sm:text-xs shrink-0 transition mt-0.5 ${
-                          isSelected
+                        className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-extrabold text-[11px] sm:text-xs shrink-0 transition mt-0.5 ${isSelected
                             ? "bg-[#FF7C55] text-white shadow-xs"
                             : "bg-[#2B2B2B] text-white"
-                        }`}
+                          }`}
                       >
                         {q.number}
                       </div>
@@ -205,13 +200,12 @@ export const MappingWorkspace: React.FC<MappingWorkspaceProps> = ({
                         </span>
                       ) : grade ? (
                         <span
-                          className={`px-2.5 sm:px-3 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold border ${
-                            grade.verdict === "correct"
+                          className={`px-2.5 sm:px-3 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold border ${grade.verdict === "correct"
                               ? "bg-[#91D381] text-[#2E7D32] border-[#91D381]"
                               : grade.verdict === "partial"
-                              ? "bg-[#F4CBBF] text-[#D9534F] border-[#F4CBBF]"
-                              : "bg-[#F4CBBF] text-[#D9534F] border-[#F4CBBF]"
-                          }`}
+                                ? "bg-[#F4CBBF] text-[#D9534F] border-[#F4CBBF]"
+                                : "bg-[#F4CBBF] text-[#D9534F] border-[#F4CBBF]"
+                            }`}
                         >
                           {grade.score}/{grade.maxScore}
                         </span>
@@ -284,9 +278,8 @@ export const MappingWorkspace: React.FC<MappingWorkspaceProps> = ({
 
         {/* RIGHT PANEL: Answer Sheet Document Viewer with Bounding Box Overlay */}
         <div
-          className={`flex-1 bg-white rounded-2xl border border-[#E5E5E5] flex flex-col shadow-sm overflow-hidden ${
-            mobileTab === "questions" ? "hidden md:flex" : "flex"
-          }`}
+          className={`flex-1 bg-white rounded-2xl border border-[#E5E5E5] flex flex-col shadow-sm overflow-hidden ${mobileTab === "questions" ? "hidden md:flex" : "flex"
+            }`}
         >
           {/* Controls Toolbar matching Figma */}
           <div className="p-2.5 sm:p-3 bg-[#2B2B2B] text-white flex items-center justify-between text-xs">

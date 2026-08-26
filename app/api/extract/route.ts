@@ -77,32 +77,8 @@ export async function POST(req: Request) {
     });
   } catch (error: any) {
     console.error("Extraction pipeline error:", error);
-    if (currentSessionId) {
-      try {
-        const sample = getSampleDataset();
-        const fallbackSession = updateSession(currentSessionId, {
-          questions: sample.questions,
-          answerSegments: sample.answerSegments,
-          mappings: sample.mappings,
-          unmatchedSegments: sample.unmatchedSegments,
-          grades: sample.grades,
-          status: "graded",
-          progressStep: 6,
-          progressMessage: "AI Extraction completed via local fallback engine.",
-        });
-        return NextResponse.json({
-          success: true,
-          sessionId: currentSessionId,
-          data: fallbackSession,
-          warning: error.message,
-        });
-      } catch (fallbackErr) {
-        console.error("Fallback session update failed:", fallbackErr);
-      }
-    }
-
     return NextResponse.json(
-      { error: error.message || "API Not Responding: Extraction pipeline failed." },
+      { error: error.message || "Extraction pipeline failed." },
       { status: 500 }
     );
   }
