@@ -62,14 +62,14 @@ export const Header: React.FC<HeaderProps> = ({ onBack, onOpenMobileSidebar }) =
           <div className="relative p-0.5 rounded-full bg-[#F4E3D9] flex items-center justify-center shadow-xs">
             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#2B2B2B] text-white flex items-center justify-center font-bold text-[10px] sm:text-xs overflow-hidden">
               <span className="bg-gradient-to-tr from-[#FF5722] to-[#2B2B2B] w-full h-full flex items-center justify-center">
-                MR
+                RR
               </span>
             </div>
           </div>
 
           <div className="hidden md:flex items-center space-x-1">
             <span className="text-xs font-extrabold text-[#2B2B2B] group-hover:text-[#FF5722] transition">
-              Madhur Rastogi
+              Ritu Raj
             </span>
             <ChevronDown className="w-4 h-4 text-[#6B6B6B]" />
           </div>
