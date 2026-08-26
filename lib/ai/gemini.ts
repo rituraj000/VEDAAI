@@ -1,4 +1,3 @@
-import sharp from "sharp";
 import { AIProvider } from "./provider";
 import { Question, AnswerSegment, Mapping, Grade } from "../types";
 import { getSampleDataset } from "./fallback-data";
@@ -6,65 +5,33 @@ import { getSampleDataset } from "./fallback-data";
 async function ensureValidVisionImage(img: string): Promise<string> {
   if (!img || typeof img !== "string") return "";
 
-  // Pass HTTP/HTTPS URLs directly
-  if (img.startsWith("http://") || img.startsWith("https://")) {
+  // Pass HTTP/HTTPS URLs and data URLs directly
+  if (img.startsWith("http://") || img.startsWith("https://") || img.startsWith("data:")) {
     return img;
   }
 
   try {
-    let inputBuffer: Buffer;
-
-    if (img.startsWith("data:image/svg+xml") || img.trim().startsWith("<svg")) {
-      let svgText = img;
-      if (img.startsWith("data:image/svg+xml;utf8,")) {
-        svgText = decodeURIComponent(img.replace(/^data:image\/svg\+xml;utf8,/, ""));
-      } else if (img.startsWith("data:image/svg+xml;base64,")) {
-        svgText = Buffer.from(img.replace(/^data:image\/svg\+xml;base64,/, ""), "base64").toString("utf-8");
-      } else if (img.startsWith("data:image/svg+xml,")) {
-        svgText = decodeURIComponent(img.replace(/^data:image\/svg\+xml,/, ""));
-      }
-      inputBuffer = Buffer.from(svgText);
-    } else if (img.startsWith("data:")) {
-      const commaIdx = img.indexOf(",");
-      const b64 = commaIdx !== -1 ? img.slice(commaIdx + 1) : img;
-      inputBuffer = Buffer.from(b64, "base64");
-    } else {
-      inputBuffer = Buffer.from(img.trim(), "base64");
-    }
+    let inputBuffer: Buffer = Buffer.from(img.trim(), "base64");
 
     if (!inputBuffer || inputBuffer.length < 10) {
-      throw new Error("Empty image buffer provided.");
-    }
-
-    // Check for raw PDF magic bytes (%PDF)
-    if (
-      inputBuffer.length >= 4 &&
-      inputBuffer[0] === 0x25 &&
-      inputBuffer[1] === 0x50 &&
-      inputBuffer[2] === 0x44 &&
-      inputBuffer[3] === 0x46
-    ) {
-      throw new Error(
-        "Detected raw PDF bytes passed as image. PDF pages must be rasterized to PNG before calling Vision AI API."
-      );
-    }
-
-    // Verify & re-encode image through sharp to guarantee standard PNG format
-    const pngBuffer = await sharp(inputBuffer).png().toBuffer();
-    if (!pngBuffer || pngBuffer.length < 100) {
-      throw new Error("Image re-encoding produced an empty buffer.");
-    }
-
-    return `data:image/png;base64,${pngBuffer.toString("base64")}`;
-  } catch (err: any) {
-    if (err.message?.includes("PDF")) {
-      throw err;
-    }
-    console.warn("Vision image verification warning:", err.message);
-    if (img.startsWith("data:image/png") || img.startsWith("data:image/jpeg") || img.startsWith("data:image/webp")) {
       return img;
     }
-    throw new Error(`Invalid image payload: ${err.message}`);
+
+    // Verify & re-encode image through sharp dynamically if available
+    try {
+      const sharp = (await import("sharp")).default;
+      const pngBuffer = await sharp(inputBuffer).png().toBuffer();
+      if (pngBuffer && pngBuffer.length >= 100) {
+        return `data:image/png;base64,${pngBuffer.toString("base64")}`;
+      }
+    } catch (sharpErr) {
+      console.warn("Sharp re-encoding bypassed on serverless:", sharpErr);
+    }
+
+    return `data:image/png;base64,${img}`;
+  } catch (err: any) {
+    console.warn("Vision image verification warning:", err.message);
+    return img;
   }
 }
 
