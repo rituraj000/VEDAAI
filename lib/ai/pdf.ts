@@ -42,9 +42,9 @@ export async function pdfBufferToPageImages(pdfBuffer: Buffer): Promise<string[]
 
     const textLinesHtml = textItems.length > 0
       ? textItems.map((t: string, idx: number) => {
-          const escaped = t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-          return `<text x="50" y="${60 + idx * 28}" font-family="sans-serif" font-size="16" fill="#2B2B2B">${escaped}</text>`;
-        }).join("\n")
+        const escaped = t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return `<text x="50" y="${60 + idx * 28}" font-family="sans-serif" font-size="16" fill="#2B2B2B">${escaped}</text>`;
+      }).join("\n")
       : `<text x="50" y="100" font-family="sans-serif" font-size="18" fill="#2B2B2B">PDF Document Page ${i}</text>`;
 
     const svg = `
