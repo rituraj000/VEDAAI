@@ -101,43 +101,62 @@ export class GeminiProvider implements AIProvider {
     );
 
     if (key.startsWith("sk-or-")) {
-      // OpenRouter API call
+      // OpenRouter API call with explicit max_tokens & automatic fallback for low credit balances
       const imageContent = validatedImages.map((img) => ({
         type: "image_url",
         image_url: { url: img },
       }));
 
-      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${key}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": getAppUrl(),
-          "X-Title": "VedaAI Assessment Extraction",
-        },
-        body: JSON.stringify({
-          model: "openai/gpt-4o-mini",
-          messages: [
-            {
-              role: "user",
-              content: [{ type: "text", text: prompt }, ...imageContent],
+      const modelsToTry = [
+        "openai/gpt-4o-mini",
+        "google/gemini-2.0-flash-001",
+        "meta-llama/llama-3.2-11b-vision-instruct:free",
+      ];
+
+      let lastErrorText = "";
+
+      for (const model of modelsToTry) {
+        try {
+          const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${key}`,
+              "Content-Type": "application/json",
+              "HTTP-Referer": getAppUrl(),
+              "X-Title": "VedaAI Assessment Extraction",
             },
-          ],
-        }),
-      });
+            body: JSON.stringify({
+              model,
+              max_tokens: 1200,
+              messages: [
+                {
+                  role: "user",
+                  content: [{ type: "text", text: prompt }, ...imageContent],
+                },
+              ],
+            }),
+          });
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`API Not Responding (Status ${res.status}): ${errorText}`);
+          if (!res.ok) {
+            lastErrorText = await res.text();
+            if (res.status === 402 || res.status === 429) {
+              console.warn(`OpenRouter model ${model} status ${res.status}, trying fallback model...`);
+              continue;
+            }
+            throw new Error(`API Not Responding (Status ${res.status}): ${lastErrorText}`);
+          }
+
+          const data = await res.json();
+          const content = data.choices?.[0]?.message?.content;
+          if (content) {
+            return content;
+          }
+        } catch (err: any) {
+          lastErrorText = err.message || String(err);
+        }
       }
 
-      const data = await res.json();
-      const content = data.choices?.[0]?.message?.content;
-      if (!content) {
-        throw new Error("API Not Responding: Received empty response from model.");
-      }
-
-      return content;
+      throw new Error(`OpenRouter API Error (Status 402/Credit Limit): ${lastErrorText}`);
     } else {
       // Direct Google Gemini API call
       const contents: any[] = [{ text: prompt }];

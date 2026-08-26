@@ -8,7 +8,7 @@ export const config = {
     process.env.URL_PROD ||
     process.env.url_prod ||
     process.env.NEXT_PUBLIC_URL_PROD ||
-    "https://vedaai-rose.vercel.app",
+    "https://vedaai-pearl.vercel.app",
   apiKey:
     process.env.API_KEY ||
     process.env.api_key ||
@@ -32,7 +32,7 @@ export function getAppUrl(): string {
       process.env.URL_PROD ||
       process.env.url_prod ||
       process.env.NEXT_PUBLIC_URL_PROD ||
-      "https://vedaai-rose.vercel.app"
+      "https://vedaai-pearl.vercel.app"
     );
   }
 
