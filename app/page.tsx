@@ -59,7 +59,8 @@ export default function Home() {
       }
 
       if (!uploadRes.ok) {
-        throw new Error("Failed to upload files.");
+        const errBody = await uploadRes.json().catch(() => null);
+        throw new Error(errBody?.error || "Failed to upload files.");
       }
 
       const uploadData = await uploadRes.json();
@@ -79,7 +80,8 @@ export default function Home() {
       });
 
       if (!extractRes.ok) {
-        throw new Error("Failed during AI extraction & mapping phase.");
+        const errBody = await extractRes.json().catch(() => null);
+        throw new Error(errBody?.error || "Failed during AI extraction & mapping phase.");
       }
 
       const extractData = await extractRes.json();
