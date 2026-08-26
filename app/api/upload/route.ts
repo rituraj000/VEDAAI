@@ -3,6 +3,7 @@ import { saveSession } from "@/lib/store";
 import { SessionData } from "@/lib/types";
 import { generateFigmaAnswerSheetSVG } from "@/lib/ai/fallback-data";
 
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
