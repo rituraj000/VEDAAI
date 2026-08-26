@@ -362,7 +362,11 @@ export const MappingWorkspace: React.FC<MappingWorkspaceProps> = ({
               <img
                 src={currentAnswerImage}
                 alt={`Answer Sheet Page ${activePageIndex + 1}`}
-                className="w-full h-auto block rounded-lg pointer-events-none"
+                className="w-full h-auto min-h-[600px] sm:min-h-[800px] block rounded-lg pointer-events-none bg-white object-contain"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = generateFigmaAnswerSheetSVG(activePageIndex + 1);
+                }}
               />
 
               {/* Bounding Box Overlays with Figma attached top-left badge tag */}
