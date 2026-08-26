@@ -40,14 +40,12 @@ export default function Home() {
       let uploadRes;
 
       if (isSample || (!qpFile && !ansFile)) {
-        // Sample demo mode upload request
         uploadRes = await fetch("/api/upload", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ sample: true }),
         });
       } else {
-        // Real file upload request
         const formData = new FormData();
         if (qpFile) formData.append("questionPaper", qpFile);
         if (ansFile) formData.append("answerSheet", ansFile);
@@ -67,7 +65,6 @@ export default function Home() {
       const newSessionId = uploadData.sessionId;
       setSessionId(newSessionId);
 
-      // Trigger AI Extraction Pipeline
       setCurrentStep(2);
 
       const extractRes = await fetch("/api/extract", {
@@ -76,6 +73,8 @@ export default function Home() {
         body: JSON.stringify({
           sessionId: newSessionId,
           apiKey,
+          questionPaperPages: uploadData.questionPaperPages,
+          answerSheetPages: uploadData.answerSheetPages,
         }),
       });
 
@@ -86,7 +85,19 @@ export default function Home() {
 
       const extractData = await extractRes.json();
       if (extractData.data) {
-        setSessionData(extractData.data);
+        const mergedSession: SessionData = {
+          ...extractData.data,
+          questionPaperPages: uploadData.questionPaperPages || extractData.data.questionPaperPages || [],
+          answerSheetPages: uploadData.answerSheetPages || extractData.data.answerSheetPages || [],
+          questionPaperName: uploadData.questionPaperName || extractData.data.questionPaperName || "",
+          answerSheetName: uploadData.answerSheetName || extractData.data.answerSheetName || "",
+          questionPaperSize: uploadData.questionPaperSize || extractData.data.questionPaperSize || "",
+          answerSheetSize: uploadData.answerSheetSize || extractData.data.answerSheetSize || "",
+          questionPaperPageCount: uploadData.questionPaperPageCount || extractData.data.questionPaperPageCount || 0,
+          answerSheetPageCount: uploadData.answerSheetPageCount || extractData.data.answerSheetPageCount || 0,
+          createdAt: extractData.data.createdAt || Date.now(),
+        };
+        setSessionData(mergedSession);
         setViewState("mapping");
       } else {
         throw new Error("Received malformed session payload.");

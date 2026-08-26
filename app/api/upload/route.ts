@@ -112,7 +112,18 @@ export async function POST(req: Request) {
     };
 
     saveSession(session);
-    return NextResponse.json({ success: true, sessionId });
+    return NextResponse.json({
+      success: true,
+      sessionId,
+      questionPaperPages: qpPages,
+      answerSheetPages: ansPages,
+      questionPaperName: qpName,
+      answerSheetName: ansName,
+      questionPaperSize: qpSize,
+      answerSheetSize: ansSize,
+      questionPaperPageCount: qpPages.length,
+      answerSheetPageCount: ansPages.length,
+    });
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json(

@@ -1,50 +1,59 @@
 import { NextResponse } from "next/server";
 import { getSession, updateSession } from "@/lib/store";
 import { GeminiProvider } from "@/lib/ai/gemini";
-import { getSampleDataset } from "@/lib/ai/fallback-data";
 
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   let currentSessionId = "";
   try {
-    const { sessionId, apiKey } = await req.json();
+    const { sessionId, apiKey, questionPaperPages, answerSheetPages } = await req.json();
     if (!sessionId) {
       return NextResponse.json({ error: "sessionId is required" }, { status: 400 });
     }
     currentSessionId = sessionId;
 
-    const session = getSession(sessionId);
-    if (!session) {
-      return NextResponse.json({ error: "Session not found" }, { status: 404 });
+    let qpPages: string[] = questionPaperPages || [];
+    let ansPages: string[] = answerSheetPages || [];
+
+    if (qpPages.length === 0 || ansPages.length === 0) {
+      const session = getSession(sessionId);
+      if (session) {
+        qpPages = session.questionPaperPages || [];
+        ansPages = session.answerSheetPages || [];
+      }
     }
 
-    const provider = new GeminiProvider(apiKey);
+    if (qpPages.length === 0 && ansPages.length === 0) {
+      return NextResponse.json(
+        { error: "No page images found. Please re-upload your files." },
+        { status: 400 }
+      );
+    }
 
-    // Update status to extracting questions
     updateSession(sessionId, {
       status: "extracting",
       progressStep: 2,
       progressMessage: "Extracting questions via AI Vision...",
     });
 
-    // Stage A: Extract Questions (Falls back locally if API fails)
-    const questions = await provider.extractQuestions(session.questionPaperPages);
+    const provider = new GeminiProvider(apiKey);
+
+    const questions = await provider.extractQuestions(qpPages);
 
     updateSession(sessionId, {
       progressStep: 3,
       progressMessage: "Transcribing handwritten answers & bounding boxes...",
     });
 
-    // Stage B: Extract Answers (Falls back locally if API fails)
-    const answerSegments = await provider.extractAnswers(session.answerSheetPages);
+    const answerSegments = await provider.extractAnswers(ansPages);
 
     updateSession(sessionId, {
       progressStep: 4,
       progressMessage: "Mapping student answers to extracted questions...",
     });
 
-    // Stage C: Map Answers
     const { mappings, unmatchedSegments } = await provider.mapAnswersToQuestions(
       questions,
       answerSegments
@@ -55,10 +64,8 @@ export async function POST(req: Request) {
       progressMessage: "Generating AI scores & evaluation feedback...",
     });
 
-    // Stage D: Grade Answers
     const grades = await provider.gradeAnswers(questions, mappings);
 
-    // Update session state with AI API results
     const finalSession = updateSession(sessionId, {
       questions,
       answerSegments,
@@ -73,7 +80,17 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       sessionId,
-      data: finalSession,
+      data: finalSession || {
+        sessionId,
+        questions,
+        answerSegments,
+        mappings,
+        unmatchedSegments,
+        grades,
+        status: "graded",
+        progressStep: 6,
+        progressMessage: "AI Extraction & Mapping completed successfully!",
+      },
     });
   } catch (error: any) {
     console.error("Extraction pipeline error:", error);
