@@ -49,7 +49,7 @@ function parseJSONFromResponse(rawResponse: string): any {
         const fixed = matchArray[0].replace(/,\s*([\]}])/g, "$1");
         try {
           return JSON.parse(fixed);
-        } catch (e2) {}
+        } catch (e2) { }
       }
     }
     const matchObj = cleaned.match(/\{[\s\S]*\}/);
@@ -60,7 +60,7 @@ function parseJSONFromResponse(rawResponse: string): any {
         const fixed = matchObj[0].replace(/,\s*([\]}])/g, "$1");
         try {
           return JSON.parse(fixed);
-        } catch (e4) {}
+        } catch (e4) { }
       }
     }
   }

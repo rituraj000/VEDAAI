@@ -66,31 +66,26 @@ export async function POST(req: Request) {
 
     const grades = await provider.gradeAnswers(questions, mappings);
 
-    const finalSession = updateSession(sessionId, {
+    const payloadData = {
+      sessionId,
       questions,
       answerSegments,
       mappings,
       unmatchedSegments,
       grades,
-      status: "graded",
+      status: "graded" as const,
       progressStep: 6,
       progressMessage: "AI Extraction & Mapping completed successfully!",
-    });
+      questionPaperPages: qpPages,
+      answerSheetPages: ansPages,
+    };
+
+    updateSession(sessionId, payloadData);
 
     return NextResponse.json({
       success: true,
       sessionId,
-      data: finalSession || {
-        sessionId,
-        questions,
-        answerSegments,
-        mappings,
-        unmatchedSegments,
-        grades,
-        status: "graded",
-        progressStep: 6,
-        progressMessage: "AI Extraction & Mapping completed successfully!",
-      },
+      data: payloadData,
     });
   } catch (error: any) {
     console.error("Extraction pipeline error:", error);

@@ -12,38 +12,43 @@ export function generateFigmaAnswerSheetSVG(pageNum: number): string {
     svgContent = `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
         ${bg}
-        <text x="90" y="50" font-family="'Comic Sans MS', sans-serif" font-weight="bold" font-size="16" fill="#2B2B2B">Q1. Arteries carry oxygenated blood away from the heart to body organs.</text>
-        <g transform="translate(90, 80)">
-          <text x="0" y="25" font-family="'Comic Sans MS', sans-serif" font-size="15" fill="#2B2B2B">Photosynthesis is the process used by green plants and some other organisms</text>
-          <text x="0" y="48" font-family="'Comic Sans MS', sans-serif" font-size="15" fill="#2B2B2B">to convert light energy into chemical energy.</text>
-          <rect x="0" y="70" width="480" height="40" rx="8" fill="#FFF9F5" stroke="#E5E5E5"/>
-          <text x="20" y="95" font-family="'Comic Sans MS', sans-serif" font-weight="bold" font-size="14" fill="#2B2B2B">6CO₂ + 6H₂O   ────── Light / Chlorophyll ──────>   C₆H₁₂O₆ + 6O₂</text>
-          <g transform="translate(180, 120)">
-            <circle cx="-60" cy="30" r="18" fill="none" stroke="#FF5722" stroke-width="2" stroke-dasharray="3 2"/>
-            <text x="-85" y="65" font-family="'Comic Sans MS'" font-size="12" fill="#FF5722">Sunlight</text>
-            <path d="M-40,40 L-10,70" stroke="#FF5722" stroke-width="2"/>
-            <text x="-120" y="110" font-family="'Comic Sans MS'" font-size="13" fill="#2B2B2B">Carbon dioxide</text>
-            <path d="M-30,110 L10,110" stroke="#303030" stroke-width="1.5"/>
-            <path d="M30,170 Q30,130 30,80" stroke="#2E7D32" stroke-width="4" fill="none"/>
-            <path d="M30,120 Q60,100 80,120 Q50,140 30,120" fill="#91D381" stroke="#2E7D32" stroke-width="2"/>
-            <path d="M30,140 Q0,120 -20,140 Q10,160 30,140" fill="#91D381" stroke="#2E7D32" stroke-width="2"/>
-            <text x="100" y="110" font-family="'Comic Sans MS'" font-size="13" fill="#FF5722">Oxygen</text>
-            <path d="M50,110 L95,110" stroke="#FF5722" stroke-width="1.5"/>
-            <line x1="-40" y1="170" x2="100" y2="170" stroke="#BCAAA4" stroke-width="3"/>
-            <path d="M30,170 Q20,190 10,210 M30,170 Q40,195 50,215" stroke="#8D6E63" stroke-width="2"/>
-            <text x="55" y="200" font-family="'Comic Sans MS'" font-size="13" fill="#2B2B2B">Water</text>
-          </g>
-          <g transform="translate(0, 360)">
-            <text x="0" y="20" font-family="'Comic Sans MS', sans-serif" font-weight="bold" font-size="15" fill="#2B2B2B">The process mainly occurs in the chloroplast of the plant cell. It has</text>
-            <text x="0" y="42" font-family="'Comic Sans MS', sans-serif" font-weight="bold" font-size="15" fill="#2B2B2B">two main stages:</text>
-            <text x="0" y="66" font-family="'Comic Sans MS', sans-serif" font-size="14" fill="#303030">1. Light reaction — Captures light energy.</text>
-            <text x="0" y="88" font-family="'Comic Sans MS', sans-serif" font-size="14" fill="#303030">2. Dark reaction — Uses energy to make glucose.</text>
-          </g>
+        <text x="90" y="55" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="16" fill="#4B5563">Name: Rahul Kumar         Roll No: 10482</text>
+        <text x="90" y="80" font-family="'Comic Sans MS', cursive, sans-serif" font-size="13" fill="#6B7280">Testing note: Answers are intentionally arranged out of order.</text>
+
+        {/* Q3 Section - y: ~110px */}
+        <g transform="translate(90, 130)">
+          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="16" fill="#1F2937">Q3</text>
+          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">The instruction cycle is the sequence of operations performed by the CPU to execute an instruction.</text>
+          <text x="0" y="46" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">The main stages are <tspan font-weight="bold">Fetch</tspan>, <tspan font-weight="bold">Decode</tspan>, <tspan font-weight="bold">Execute</tspan>, <tspan font-weight="bold">Memory access</tspan> and <tspan font-weight="bold">Write-back</tspan>.</text>
         </g>
-        <g transform="translate(90, 570)">
-          <text x="0" y="25" font-family="'Comic Sans MS', sans-serif" font-size="15" fill="#2B2B2B">Q3. Chloroplasts contain chlorophyll pigment which absorbs solar light energy.</text>
-          <text x="0" y="50" font-family="'Comic Sans MS', sans-serif" font-size="15" fill="#2B2B2B">Stage 1: Photolysis of water in thylakoid membrane.</text>
-          <text x="0" y="75" font-family="'Comic Sans MS', sans-serif" font-size="15" fill="#2B2B2B">Stage 2: Carbon fixation (Calvin cycle) in the stroma.</text>
+
+        {/* Q6 Section - y: ~308px */}
+        <g transform="translate(90, 325)">
+          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="16" fill="#1F2937">Q6</text>
+          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">Instructions = 100, CPI = 2, clock rate = 1 GHz.</text>
+          <text x="0" y="46" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">CPU cycles = 100 * 2 = 200 cycles.</text>
+          <text x="0" y="68" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">Execution time = 200 / (1 * 10^9) = <tspan font-weight="bold" fill="#059669">200 ns</tspan>.</text>
+        </g>
+
+        {/* Q1 Section - y: ~506px */}
+        <g transform="translate(90, 520)">
+          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="16" fill="#1F2937">Q1</text>
+          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">RISC uses a smaller and simpler instruction set. CISC uses a larger and more complex instruction</text>
+          <text x="0" y="46" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">set. RISC emphasizes simple instructions and efficient pipelining, while CISC provides more powerful</text>
+          <text x="0" y="68" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">instructions.</text>
+        </g>
+
+        {/* Q8 (b) Section - y: ~704px */}
+        <g transform="translate(90, 720)">
+          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="16" fill="#1F2937">Q8 (b)</text>
+          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">The Control Unit controls and coordinates CPU operations. It fetches and decodes instructions and</text>
+          <text x="0" y="46" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">generates control signals for registers, ALU, memory and other components.</text>
+        </g>
+
+        {/* Q5 Section - y: ~902px */}
+        <g transform="translate(90, 915)">
+          <text x="0" y="0" font-family="'Comic Sans MS', cursive, sans-serif" font-weight="bold" font-size="16" fill="#1F2937">Q5</text>
+          <text x="0" y="24" font-family="'Comic Sans MS', cursive, sans-serif" font-size="14" fill="#374151">Clock frequency = 2 GHz. Clock cycle time = 1 / (2 * 10^9) seconds = <tspan font-weight="bold" fill="#059669">0.5 ns</tspan>.</text>
         </g>
       </svg>
     `;
