@@ -59,7 +59,8 @@ export default function Home() {
       }
 
       if (!uploadRes.ok) {
-        throw new Error("Failed to upload files.");
+        const errJson = await uploadRes.json().catch(() => ({}));
+        throw new Error(errJson.error || `Upload failed with status code ${uploadRes.status}`);
       }
 
       const uploadData = await uploadRes.json();
