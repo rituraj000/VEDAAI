@@ -62,7 +62,7 @@ export function generateFigmaAnswerSheetSVG(pageNum: number): string {
     `;
   }
 
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svgContent)}`;
+  return `data:image/svg+xml;base64,${Buffer.from(svgContent).toString("base64")}`;
 }
 
 export function getSampleDataset() {

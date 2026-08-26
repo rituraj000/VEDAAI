@@ -8,6 +8,7 @@ import {
   Grade,
   SessionData,
 } from "@/lib/types";
+import { generateFigmaAnswerSheetSVG } from "@/lib/ai/fallback-data";
 import {
   ChevronDown,
   ChevronUp,
@@ -85,7 +86,11 @@ export const MappingWorkspace: React.FC<MappingWorkspaceProps> = ({
     setIsExpandAll(!isExpandAll);
   };
 
-  const currentAnswerImage = answerSheetPages[activePageIndex] || answerSheetPages[0];
+  const pageCount = (answerSheetPages && answerSheetPages.length > 0) ? answerSheetPages.length : 1;
+  const currentAnswerImage =
+    (answerSheetPages && answerSheetPages[activePageIndex]) ||
+    (answerSheetPages && answerSheetPages[0]) ||
+    generateFigmaAnswerSheetSVG(activePageIndex + 1);
 
   const totalScore = Object.values(grades).reduce((acc, g) => acc + (g.score || 0), 0);
   const maxPossibleScore = questions.reduce((acc, q) => acc + (q.maxScore || 2), 0);
@@ -324,15 +329,15 @@ export const MappingWorkspace: React.FC<MappingWorkspaceProps> = ({
                   ‹
                 </button>
                 <span className="font-bold px-1">
-                  {activePageIndex + 1}/{answerSheetPages.length}
+                  {activePageIndex + 1}/{pageCount}
                 </span>
                 <button
                   onClick={() =>
                     setActivePageIndex((prev) =>
-                      Math.min(answerSheetPages.length - 1, prev + 1)
+                      Math.min(pageCount - 1, prev + 1)
                     )
                   }
-                  disabled={activePageIndex === answerSheetPages.length - 1}
+                  disabled={activePageIndex === pageCount - 1}
                   className="disabled:opacity-30 hover:text-[#FF5722] px-1 font-bold"
                 >
                   ›
