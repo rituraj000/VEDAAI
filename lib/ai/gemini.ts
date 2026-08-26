@@ -422,6 +422,32 @@ Return strictly a valid JSON array of objects with keys: "id", "detectedLabel", 
     return result;
   }
 
+  private isQuestionLabelMatch(qNum: string, segLabel?: string): boolean {
+  if (!qNum || !segLabel) return false;
+
+  const qClean = qNum.toLowerCase().trim().replace(/^q\s*/i, "");
+  const sClean = segLabel.toLowerCase().trim().replace(/^q\s*/i, "");
+
+  // 1. Direct exact match (e.g., "1" === "1", "8b" === "8b", "3" === "3")
+  if (qClean === sClean) return true;
+
+  const qAlphaNum = qClean.replace(/[^a-z0-9]/g, "");
+  const sAlphaNum = sClean.replace(/[^a-z0-9]/g, "");
+  if (qAlphaNum === sAlphaNum && qAlphaNum.length > 0) return true;
+
+  // 2. Exact word-boundary token match (e.g. "1" matches "Q1", but NOT "10" or "11")
+  const numMatch = qClean.match(/(\d+[a-z]?)/);
+  if (numMatch) {
+    const targetToken = numMatch[1];
+    const regex = new RegExp(`(?:^|[^0-9a-z])${targetToken}(?:$|[^0-9a-z])`, "i");
+    if (regex.test(sClean)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
   async mapAnswersToQuestions(
     questions: Question[],
     answerSegments: AnswerSegment[]
@@ -433,12 +459,8 @@ Return strictly a valid JSON array of objects with keys: "id", "detectedLabel", 
     const usedSegmentIds = new Set<string>();
 
     for (const q of questions) {
-      const qNumClean = q.number.toLowerCase().replace(/[^a-z0-9]/g, "");
-
       const explicitMatches = answerSegments.filter((seg) => {
-        if (!seg.detectedLabel) return false;
-        const labelClean = seg.detectedLabel.toLowerCase().replace(/[^a-z0-9]/g, "");
-        return labelClean.includes(qNumClean) || qNumClean.includes(labelClean);
+        return this.isQuestionLabelMatch(q.number, seg.detectedLabel);
       });
 
       if (explicitMatches.length > 0) {
