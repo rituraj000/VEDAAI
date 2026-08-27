@@ -87,10 +87,22 @@ export const MappingWorkspace: React.FC<MappingWorkspaceProps> = ({
   };
 
   const pageCount = (answerSheetPages && answerSheetPages.length > 0) ? answerSheetPages.length : 1;
-  const currentAnswerImage =
+  const rawImage =
     (answerSheetPages && answerSheetPages[activePageIndex]) ||
-    (answerSheetPages && answerSheetPages[0]) ||
-    generateFigmaAnswerSheetSVG(activePageIndex + 1);
+    (answerSheetPages && answerSheetPages[0]);
+
+  const isBlankPlaceholder =
+    !rawImage ||
+    typeof rawImage !== "string" ||
+    rawImage.length < 50 ||
+    (rawImage.startsWith("data:image/svg+xml") &&
+      (rawImage.includes("Page%201%20Document%20Content") ||
+        rawImage.includes("Page 1 Document Content") ||
+        rawImage.includes("PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgMTEwMCI")));
+
+  const currentAnswerImage = isBlankPlaceholder
+    ? generateFigmaAnswerSheetSVG(activePageIndex + 1)
+    : rawImage;
 
   const totalScore = Object.values(grades).reduce((acc, g) => acc + (g.score || 0), 0);
   const maxPossibleScore = questions.reduce((acc, q) => acc + (q.maxScore || 2), 0);
