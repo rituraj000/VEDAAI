@@ -1,8 +1,11 @@
 import { AIProvider } from "./provider";
 import { Question, AnswerSegment, Mapping, Grade } from "../types";
 
-async function ensureValidVisionImage(img: string): Promise<string> {
-  if (!img || typeof img !== "string") return "";
+async function ensureValidVisionImage(rawImg: string): Promise<string> {
+  if (!rawImg || typeof rawImg !== "string") return "";
+
+  // Strip hash metadata fragment if present (e.g. #pdftext=...)
+  const img = rawImg.split("#pdftext=")[0];
 
   // Convert SVG data URLs to base64 PNG data URLs so vision models accept them
   if (img.startsWith("data:image/svg+xml") || img.trim().startsWith("<svg")) {
@@ -32,9 +35,29 @@ async function ensureValidVisionImage(img: string): Promise<string> {
 
 function decodeTextFromImages(pageImages: string[]): { textLines: string[]; pageIndex: number }[] {
   const result: { textLines: string[]; pageIndex: number }[] = [];
-  pageImages.forEach((img, pageIndex) => {
-    if (!img || typeof img !== "string") return;
+  pageImages.forEach((rawImg, pageIndex) => {
+    if (!rawImg || typeof rawImg !== "string") return;
     try {
+      // 1. Check embedded pdftext metadata hash
+      if (rawImg.includes("#pdftext=")) {
+        const b64Text = rawImg.split("#pdftext=")[1];
+        if (b64Text) {
+          let rawText = "";
+          if (typeof window !== "undefined" && typeof window.atob === "function") {
+            rawText = new TextDecoder().decode(Uint8Array.from(window.atob(b64Text), (c) => c.charCodeAt(0)));
+          } else if (typeof Buffer !== "undefined") {
+            rawText = Buffer.from(b64Text, "base64").toString("utf-8");
+          }
+          const lines = rawText.split("\n").map((l) => l.trim()).filter((l) => l.length > 0);
+          if (lines.length > 0) {
+            result.push({ textLines: lines, pageIndex });
+            return;
+          }
+        }
+      }
+
+      // 2. SVG text extraction
+      const img = rawImg.split("#")[0];
       let decoded = img;
       if (img.includes(";base64,")) {
         const b64 = img.split(";base64,")[1];

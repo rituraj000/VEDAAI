@@ -46,7 +46,13 @@ export async function pdfBufferToPageImages(pdfBuffer: Buffer): Promise<string[]
       });
 
       if (dataUrl && typeof dataUrl === "string" && dataUrl.length > 50) {
-        pageImages.push(dataUrl);
+        const pageText = extractedPdfText[i - 1] || "";
+        if (pageText.trim().length > 0) {
+          const pageTextB64 = Buffer.from(pageText).toString("base64");
+          pageImages.push(`${dataUrl}#pdftext=${pageTextB64}`);
+        } else {
+          pageImages.push(dataUrl);
+        }
         continue;
       }
     } catch (err: any) {
