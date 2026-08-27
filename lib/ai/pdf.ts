@@ -55,13 +55,13 @@ export async function pdfBufferToPageImages(pdfBuffer: Buffer): Promise<string[]
 
     // Serverless-safe SVG Page Renderer (works on Vercel without native C++ binary dependencies)
     const pageText = extractedPdfText[i - 1] || "";
-    if (pageText && pageText.trim().length > 10) {
-      const lines = pageText
-        .split("\n")
-        .map((l) => l.trim())
-        .filter((l) => l.length > 0)
-        .slice(0, 35);
+    const lines = pageText
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0)
+      .slice(0, 35);
 
+    if (lines.length >= 2) {
       const textElements = lines
         .map(
           (line, idx) =>
@@ -81,7 +81,7 @@ export async function pdfBufferToPageImages(pdfBuffer: Buffer): Promise<string[]
 
       pageImages.push(`data:image/svg+xml;base64,${Buffer.from(svgDoc).toString("base64")}`);
     } else {
-      // High quality structured answer sheet SVG if text is unavailable
+      // High quality structured answer sheet SVG if text is unavailable or PDF is image-only scan
       pageImages.push(generateFigmaAnswerSheetSVG(i));
     }
   }

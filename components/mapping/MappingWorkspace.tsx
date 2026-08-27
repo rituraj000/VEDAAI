@@ -91,14 +91,25 @@ export const MappingWorkspace: React.FC<MappingWorkspaceProps> = ({
     (answerSheetPages && answerSheetPages[activePageIndex]) ||
     (answerSheetPages && answerSheetPages[0]);
 
-  const isBlankPlaceholder =
-    !rawImage ||
-    typeof rawImage !== "string" ||
-    rawImage.length < 50 ||
-    (rawImage.startsWith("data:image/svg+xml") &&
-      (rawImage.includes("Page%201%20Document%20Content") ||
-        rawImage.includes("Page 1 Document Content") ||
-        rawImage.includes("PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgMTEwMCI")));
+  let isBlankPlaceholder = !rawImage || typeof rawImage !== "string" || rawImage.length < 50;
+
+  if (!isBlankPlaceholder && rawImage.startsWith("data:image/svg+xml")) {
+    try {
+      let decodedSvg = rawImage;
+      if (rawImage.includes(";base64,")) {
+        const b64 = rawImage.split(";base64,")[1];
+        if (typeof window !== "undefined" && window.atob) {
+          decodedSvg = window.atob(b64);
+        }
+      }
+      const textMatches = decodedSvg.match(/<text[\s\S]*?<\/text>/gi) || [];
+      if (textMatches.length < 2 || decodedSvg.includes("Uploaded Document Sheet")) {
+        isBlankPlaceholder = true;
+      }
+    } catch (e) {
+      // safe fallback
+    }
+  }
 
   const currentAnswerImage = isBlankPlaceholder
     ? generateFigmaAnswerSheetSVG(activePageIndex + 1)
