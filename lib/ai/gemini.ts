@@ -169,19 +169,23 @@ export class GeminiProvider implements AIProvider {
       }));
 
       const modelsToTry = [
+        "google/gemini-2.0-flash-exp:free",
+        "google/gemini-2.0-flash-lite-preview-02-05:free",
         "google/gemini-2.0-flash-001",
-        "google/gemini-flash-1.5-8b",
-        "qwen/qwen-2.5-vl-72b-instruct:free",
+        "google/gemini-flash-1.5",
+        "google/gemini-1.5-flash:free",
+        "qwen/qwen2.5-vl-72b-instruct:free",
         "meta-llama/llama-3.2-11b-vision-instruct:free",
-        "mistralai/pixtral-12b:free",
-        "google/gemini-2.0-flash-lite-001",
+        "mistralai/pixtral-12b",
+        "openai/gpt-4o-mini:free",
         "openai/gpt-4o-mini",
       ];
 
       let lastErrorText = "";
       for (const model of modelsToTry) {
         try {
-          const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          let tokensToReq = maxTokens;
+          let res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
               Authorization: `Bearer ${key}`,
@@ -197,9 +201,33 @@ export class GeminiProvider implements AIProvider {
                   content: [{ type: "text", text: prompt }, ...imageContent],
                 },
               ],
-              max_tokens: maxTokens,
+              max_tokens: tokensToReq,
             }),
           });
+
+          if (res.status === 402 && tokensToReq > 450) {
+            // Low credit balance fallback - retry with smaller token allocation
+            tokensToReq = 450;
+            res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${key}`,
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://vedaai.app",
+                "X-Title": "VedaAI Assessment Extraction",
+              },
+              body: JSON.stringify({
+                model,
+                messages: [
+                  {
+                    role: "user",
+                    content: [{ type: "text", text: prompt }, ...imageContent],
+                  },
+                ],
+                max_tokens: tokensToReq,
+              }),
+            });
+          }
 
           if (!res.ok) {
             lastErrorText = await res.text();
@@ -224,7 +252,7 @@ export class GeminiProvider implements AIProvider {
 
       throw new Error(`API Not Responding: ${lastErrorText || "OpenRouter vision model endpoints failed. Please check your API key."}`);
     } else {
-      // Direct Google Gemini API call
+      // Direct Google Gemini API call with fallback models
       const contents: any[] = [{ text: prompt }];
       for (const img of validatedImages) {
         let mimeType = "image/png";
@@ -249,30 +277,41 @@ export class GeminiProvider implements AIProvider {
         });
       }
 
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: contents }],
-            generationConfig: { maxOutputTokens: maxTokens },
-          }),
+      const geminiModels = ["gemini-2.0-flash", "gemini-1.5-flash"];
+      let lastGeminiErr = "";
+
+      for (const geminiModel of geminiModels) {
+        try {
+          const res = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${key}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                contents: [{ parts: contents }],
+                generationConfig: { maxOutputTokens: maxTokens },
+              }),
+            }
+          );
+
+          if (!res.ok) {
+            lastGeminiErr = await res.text();
+            if (res.status === 404 || res.status === 400) continue;
+            throw new Error(`Gemini API Not Responding (Status ${res.status}): ${lastGeminiErr}`);
+          }
+
+          const data = await res.json();
+          const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (content && content.trim().length > 0) {
+            return content;
+          }
+        } catch (err: any) {
+          if (err.message?.includes("Status 404") || err.message?.includes("Status 400")) continue;
+          throw err;
         }
-      );
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Gemini API Not Responding (Status ${res.status}): ${errorText}`);
       }
 
-      const data = await res.json();
-      const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!content) {
-        throw new Error("Gemini API Not Responding: Empty content returned.");
-      }
-
-      return content;
+      throw new Error(`Gemini API Not Responding: ${lastGeminiErr || "All Gemini model attempts failed."}`);
     }
   }
 
@@ -287,7 +326,7 @@ Rules:
 Return strictly a valid JSON array of objects with keys: "id", "number", "text", "pageIndex", "maxScore". Do NOT include markdown code blocks or extra text outside JSON.`;
 
     try {
-      const rawResponse = await this.callVisionAPI(prompt, pageImages, 8000);
+      const rawResponse = await this.callVisionAPI(prompt, pageImages, 2048);
       console.log("RAW extractQuestions response length:", rawResponse.length);
       const parsed = parseJSONFromResponse(rawResponse);
       if (Array.isArray(parsed) && parsed.length > 0) {
@@ -345,7 +384,7 @@ For EACH distinct answer segment on the page, return:
 Return strictly a valid JSON array of objects with keys: "id", "detectedLabel", "transcribedText", "boundingBox", "pageIndex". Do NOT include markdown code blocks.`;
 
     try {
-      const rawResponse = await this.callVisionAPI(prompt, pageImages, 8000);
+      const rawResponse = await this.callVisionAPI(prompt, pageImages, 2048);
       console.log("RAW extractAnswers response length:", rawResponse.length);
       const parsed = parseJSONFromResponse(rawResponse);
       if (Array.isArray(parsed) && parsed.length > 0) {

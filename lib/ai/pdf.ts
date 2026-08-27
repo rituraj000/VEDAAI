@@ -14,7 +14,10 @@ export async function pdfBufferToPageImages(pdfBuffer: Buffer): Promise<string[]
 
   let pdf;
   try {
-    pdf = await getDocumentProxy(data);
+    pdf = await getDocumentProxy(data, {
+      disableFontFace: true,
+      standardFontDataUrl: "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/standard_fonts/",
+    });
   } catch (err: any) {
     throw new Error(`Failed to parse PDF: ${err.message}`);
   }
