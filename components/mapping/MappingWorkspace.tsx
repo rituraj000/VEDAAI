@@ -93,21 +93,28 @@ export const MappingWorkspace: React.FC<MappingWorkspaceProps> = ({
 
   let isBlankPlaceholder = !rawImage || typeof rawImage !== "string" || rawImage.length < 50;
 
-  if (!isBlankPlaceholder && rawImage.startsWith("data:image/svg+xml")) {
+  if (!isBlankPlaceholder && (rawImage.includes("svg") || rawImage.startsWith("data:"))) {
     try {
       let decodedSvg = rawImage;
       if (rawImage.includes(";base64,")) {
         const b64 = rawImage.split(";base64,")[1];
-        if (typeof window !== "undefined" && window.atob) {
-          decodedSvg = window.atob(b64);
+        if (typeof window !== "undefined" && typeof window.atob === "function") {
+          const binStr = window.atob(b64);
+          const bytes = Uint8Array.from(binStr, (c) => c.charCodeAt(0));
+          decodedSvg = new TextDecoder().decode(bytes);
+        } else if (typeof Buffer !== "undefined") {
+          decodedSvg = Buffer.from(b64, "base64").toString("utf-8");
         }
+      } else if (rawImage.includes(";utf8,")) {
+        decodedSvg = decodeURIComponent(rawImage.split(";utf8,")[1]);
       }
+
       const textMatches = decodedSvg.match(/<text[\s\S]*?<\/text>/gi) || [];
       if (textMatches.length < 2 || decodedSvg.includes("Uploaded Document Sheet")) {
         isBlankPlaceholder = true;
       }
     } catch (e) {
-      // safe fallback
+      isBlankPlaceholder = true;
     }
   }
 

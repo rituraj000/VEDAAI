@@ -62,7 +62,19 @@ export function generateFigmaAnswerSheetSVG(pageNum: number): string {
     `;
   }
 
-  return `data:image/svg+xml;base64,${Buffer.from(svgContent).toString("base64")}`;
+  if (typeof window !== "undefined" && typeof window.btoa === "function") {
+    try {
+      return `data:image/svg+xml;base64,${window.btoa(unescape(encodeURIComponent(svgContent)))}`;
+    } catch (e) {
+      return `data:image/svg+xml;utf8,${encodeURIComponent(svgContent)}`;
+    }
+  }
+
+  if (typeof Buffer !== "undefined") {
+    return `data:image/svg+xml;base64,${Buffer.from(svgContent).toString("base64")}`;
+  }
+
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svgContent)}`;
 }
 
 export function getSampleDataset() {
